@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:schumacher/const/constant.dart';
+import 'package:schumacher/widgets/map_widget.dart';
 import 'package:schumacher/widgets/side_menu_widget.dart';
 
 class LocationScreen extends StatelessWidget {
@@ -19,7 +20,7 @@ class LocationScreen extends StatelessWidget {
               ),
                 const Expanded(
                   flex: 5,
-                  child: Text('Location Screen'),
+                  child: MapWidget(),
               ),
                 Expanded(
                   flex: 3,

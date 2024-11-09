@@ -1,12 +1,17 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schumacher/const/constant.dart';
 import 'package:schumacher/data/csv_processor.dart';
 import 'package:schumacher/data/settings_provider.dart';
 import 'package:schumacher/data/side_menu_provider.dart';
+import 'package:schumacher/firebase_options.dart';
 import 'package:schumacher/screens/main_screen.dart';
 
-void main() {
+Future<void> main() async {
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => CsvProcessor()),
