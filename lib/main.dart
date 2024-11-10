@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schumacher/const/constant.dart';
 import 'package:schumacher/data/csv_processor.dart';
+import 'package:schumacher/data/map_points_provider.dart';
 import 'package:schumacher/data/settings_provider.dart';
 import 'package:schumacher/data/side_menu_provider.dart';
 import 'package:schumacher/firebase_options.dart';
@@ -14,9 +15,10 @@ Future<void> main() async {
 
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (context) => CsvProcessor()),
+      ChangeNotifierProvider(create: (context) => CsvProcessor(), child: const MyApp(),),
       ChangeNotifierProvider(create: (context) => SideMenuProvider(), child: const MyApp(),),
       ChangeNotifierProvider(create: (context) => SettingsProvider(), child: const MyApp(),),
+      ChangeNotifierProvider(create: (context) => MapPointsProvider(), child: const MyApp(),),
     ],
     child: const MyApp(),
   ));

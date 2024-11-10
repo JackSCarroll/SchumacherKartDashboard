@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:schumacher/data/map_points_provider.dart';
 import 'package:schumacher/data/settings_provider.dart';
 
 class MapWidget extends StatefulWidget {
@@ -13,12 +14,14 @@ class MapWidget extends StatefulWidget {
 }
 
 class _MapWidgetState extends State<MapWidget> {
-  List<List<LatLng>> points = [];
+  late LatLng firstPoint;
+  late LatLng secondPoint;
   bool isAddingPoints = false;
   int tempPointCounter = 0;
   @override
   Widget build(BuildContext context) {
     var settingsProvider = Provider.of<SettingsProvider>(context);
+    var pointsProvider = Provider.of<MapPointsProvider>(context);
     return Padding(
         padding: const EdgeInsets.all(16.0),
         child: Container(
@@ -40,21 +43,17 @@ class _MapWidgetState extends State<MapWidget> {
                   initialCenter: const LatLng(-38.059252616021844, 144.3833972600851),
                   initialZoom: 18.5,
                   onTap: (tapPosition, point) {
-                    print("Tapped: $point");
                     if(isAddingPoints) {
                       setState(() {
                         if(tempPointCounter == 0) {
-                          points.add([point]);
+                          firstPoint = LatLng(point.latitude, point.longitude);
                           tempPointCounter++;
                         } else {
-                          points.last.add(point);
+                          secondPoint = LatLng(point.latitude, point.longitude);
+                          pointsProvider.addPoints(firstPoint, secondPoint);
                           tempPointCounter = 0;
                           isAddingPoints = false;
                         }
-                      });
-                    } else {
-                      setState(() {
-                        print("Points: $points");
                       });
                     }
                   },
@@ -66,7 +65,7 @@ class _MapWidgetState extends State<MapWidget> {
                     tileProvider: CancellableNetworkTileProvider(),
                   ),
                   PolylineLayer(
-                    polylines: points.map((pair) {
+                    polylines: pointsProvider.points.map((pair) {
                       return Polyline(
                         points: pair,
                         strokeWidth: 4.0,
