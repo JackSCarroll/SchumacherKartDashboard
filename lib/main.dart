@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:schumacher/const/constant.dart';
 import 'package:schumacher/data/csv_processor.dart';
@@ -10,7 +11,7 @@ import 'package:schumacher/firebase_options.dart';
 import 'package:schumacher/screens/main_screen.dart';
 
 Future<void> main() async {
-
+  await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(MultiProvider(

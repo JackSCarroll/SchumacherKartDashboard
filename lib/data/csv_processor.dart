@@ -17,6 +17,7 @@ class CsvProcessor with ChangeNotifier{
   String averageSpeed = '';
   double totalDistance = 0.0;
   List<LatLng> latLngPoints = [];
+  List<double> speedValues = [];
 
   Future<void> loadCsvData() async {
     // Load the CSV data from the path
@@ -32,6 +33,9 @@ class CsvProcessor with ChangeNotifier{
     bottomTitle = {};
     totalTime = '';
     averageSpeed = '';
+    totalDistance = 0.0;
+    latLngPoints = [];
+    speedValues = [];
     loadCsvData();
     notifyListeners();
   }
@@ -48,6 +52,7 @@ class CsvProcessor with ChangeNotifier{
       final time = dateFormat.parse(timestring);
       var minute = time.minute;
       final speed = row[3] as double;
+      speedValues.add(speed);
       tempSpeed += speed;
       final timeInMilliseconds = time.millisecondsSinceEpoch.toDouble();
 
@@ -92,20 +97,19 @@ class CsvProcessor with ChangeNotifier{
 
   // Calculate the distance between two points using the Haversine formula (Thanks to the mathematicians that are way smarter than me 😊)
   double calculateDistance(LatLng point1, LatLng point2) {
-  const double earthRadius = 6371000; // Radius of the Earth in meters
-  final double lat1 = point1.latitude * (3.141592653589793 / 180.0);
-  final double lon1 = point1.longitude * (3.141592653589793 / 180.0);
-  final double lat2 = point2.latitude * (3.141592653589793 / 180.0);
-  final double lon2 = point2.longitude * (3.141592653589793 / 180.0);
+    const double earthRadius = 6371000; // Radius of the Earth in meters
+    final double lat1 = point1.latitude * (3.141592653589793 / 180.0);
+    final double lon1 = point1.longitude * (3.141592653589793 / 180.0);
+    final double lat2 = point2.latitude * (3.141592653589793 / 180.0);
+    final double lon2 = point2.longitude * (3.141592653589793 / 180.0);
 
-  final double dLat = lat2 - lat1;
-  final double dLon = lon2 - lon1;
+    final double dLat = lat2 - lat1;
+    final double dLon = lon2 - lon1;
 
-  final double a = (sin(dLat / 2) * sin(dLat / 2)) +
-      cos(lat1) * cos(lat2) * (sin(dLon / 2) * sin(dLon / 2));
-  final double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    final double a = (sin(dLat / 2) * sin(dLat / 2)) +
+        cos(lat1) * cos(lat2) * (sin(dLon / 2) * sin(dLon / 2));
+    final double c = 2 * atan2(sqrt(a), sqrt(1 - a));
 
-  return earthRadius * c;
-}
-  
+    return earthRadius * c;
+  }
 }
