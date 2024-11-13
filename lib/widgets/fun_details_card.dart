@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:schumacher/data/fun_details.dart';
 import 'package:schumacher/data/settings_provider.dart';
@@ -44,7 +45,7 @@ class FunDetailsCard extends StatelessWidget {
             ),
             Text(
               funDetails.funData[index].title,
-              style: const TextStyle(
+              style: GoogleFonts.orbitron(
                 fontSize: 13,
                 color: Colors.grey,
                 fontWeight: FontWeight.normal,

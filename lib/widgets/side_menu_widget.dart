@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:schumacher/data/settings_provider.dart';
 import 'package:schumacher/data/side_menu_data.dart';
@@ -51,7 +52,7 @@ class _SideMenuWidgetState extends State<SideMenuWidget> {
               padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
               child: Icon(data.menu[index].icon, color: isSelected ? Colors.black : settingsProvider.selectedPrimaryColour,),
             ),        
-            Text(data.menu[index].title, style: TextStyle(fontSize: 16, color: isSelected ? Colors.black : settingsProvider.selectedPrimaryColour, fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal),),
+            Text(data.menu[index].title, style: GoogleFonts.orbitron(fontSize: 16, color: isSelected ? Colors.black : settingsProvider.selectedPrimaryColour, fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal),),
           ],
         ),
       ),

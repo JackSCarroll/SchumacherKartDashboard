@@ -10,7 +10,8 @@ import 'package:schumacher/data/settings_provider.dart';
 
 class MiniMapWidget extends StatefulWidget{
   final LatLng latLngCenter;
-  const MiniMapWidget({super.key, required this.latLngCenter});
+  final double zoom;
+  const MiniMapWidget({super.key, required this.latLngCenter, required this.zoom});
 
   @override
   State<MiniMapWidget> createState() => _MiniMapWidgetState();
@@ -29,53 +30,66 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final size = constraints.maxWidth;
-        final LatLngBounds bounds = calculateBounds(widget.latLngCenter, 18, size, size);
+        final LatLngBounds bounds = calculateBounds(widget.latLngCenter, widget.zoom, size, size);
         return SizedBox(
           width: size,
           height: size,
           child: Stack(
             children: [
-              FlutterMap(
-                options: MapOptions(
-                  cameraConstraint: CameraConstraint.containCenter(bounds: bounds),
-                  initialCenter: widget.latLngCenter,
-                  initialZoom: 18,
-                  minZoom: 18,
+              Container(
+                padding: const EdgeInsets.all(4.0),
+                decoration: BoxDecoration(
+                  color: settingsProvider.selectedPrimaryColour,
+                  borderRadius: BorderRadius.circular(8.0),
+                  border: Border.all(
+                    color: settingsProvider.selectedPrimaryColour,
+                    width: 2.0,),
+                  ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6.0),
+                  child: FlutterMap(
+                    options: MapOptions(
+                      //cameraConstraint: CameraConstraint.containCenter(bounds: bounds),
+                      initialCenter: widget.latLngCenter,
+                      initialZoom: 18,
+                      minZoom: 18,
+                    ),
+                    children: [
+                      TileLayer(
+                        urlTemplate: 'https://api.maptiler.com/tiles/satellite-v2/{z}/{x}/{y}.jpg?key=${dotenv.env['MAPTILER_API_KEY']}',
+                        userAgentPackageName: 'dev.jackscarroll.schumacher_dashboard',
+                        tileProvider: CancellableNetworkTileProvider(),
+                      ),
+                      PolylineLayer(
+                        polylines: pointsProvider.points.map((pair) {
+                          return Polyline(
+                            points: pair,
+                            strokeWidth: 4.0,
+                            color: settingsProvider.selectedPrimaryColour,
+                          );
+                        }).toList(),
+                      ),
+                      if(showHeatMap)
+                        PolylineLayer(
+                        polylines: csvProvider.latLngPoints.asMap().entries.map((entry) {
+                          if(entry.key == 0) {
+                            return null;
+                          }
+                          final previousPoint = csvProvider.latLngPoints[entry.key - 1];
+                          final currentPoint = csvProvider.latLngPoints[entry.key];
+                          final speed = csvProvider.speedValues[entry.key]; // Assuming you have a list of speeds in csvProvider
+                          final color = getColorForSpeed(speed);
+                          return Polyline(
+                            points: [previousPoint, currentPoint],
+                            strokeWidth: 4.0,
+                            color: color,
+                            pattern: const StrokePattern.dotted(spacingFactor: 1, patternFit: PatternFit.scaleUp),
+                          );
+                        }).where((polyline) => polyline != null).toList().cast<Polyline>(),
+                      ),
+                    ],
+                  ),
                 ),
-                children: [
-                  TileLayer(
-                    urlTemplate: 'https://api.maptiler.com/tiles/satellite-v2/{z}/{x}/{y}.jpg?key=${dotenv.env['MAPTILER_API_KEY']}',
-                    userAgentPackageName: 'dev.jackscarroll.schumacher_dashboard',
-                    tileProvider: CancellableNetworkTileProvider(),
-                  ),
-                  PolylineLayer(
-                    polylines: pointsProvider.points.map((pair) {
-                      return Polyline(
-                        points: pair,
-                        strokeWidth: 4.0,
-                        color: settingsProvider.selectedPrimaryColour,
-                      );
-                    }).toList(),
-                  ),
-                  if(showHeatMap)
-                    PolylineLayer(
-                    polylines: csvProvider.latLngPoints.asMap().entries.map((entry) {
-                      if(entry.key == 0) {
-                        return null;
-                      }
-                      final previousPoint = csvProvider.latLngPoints[entry.key - 1];
-                      final currentPoint = csvProvider.latLngPoints[entry.key];
-                      final speed = csvProvider.speedValues[entry.key]; // Assuming you have a list of speeds in csvProvider
-                      final color = getColorForSpeed(speed);
-                      return Polyline(
-                        points: [previousPoint, currentPoint],
-                        strokeWidth: 4.0,
-                        color: color,
-                        pattern: const StrokePattern.dotted(spacingFactor: 1, patternFit: PatternFit.scaleUp),
-                      );
-                    }).where((polyline) => polyline != null).toList().cast<Polyline>(),
-                  ),
-                ],
               ),
               Positioned(
                 top: 16.0,

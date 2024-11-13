@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:schumacher/data/csv_processor.dart';
+import 'package:schumacher/data/location_selector_provider.dart';
 import 'package:schumacher/data/map_points_provider.dart';
 import 'package:schumacher/data/settings_provider.dart';
 
@@ -21,11 +22,13 @@ class _MapWidgetState extends State<MapWidget> {
   bool isAddingPoints = false;
   bool showHeatMap = false;
   int tempPointCounter = 0;
+  final MapController _mapController = MapController();
   @override
   Widget build(BuildContext context) {
     var settingsProvider = Provider.of<SettingsProvider>(context);
     var csvProvider = Provider.of<CsvProcessor>(context);
     var pointsProvider = Provider.of<MapPointsProvider>(context);
+    var locationSelectorProvider = Provider.of<LocationSelectorProvider>(context);
     return Padding(
         padding: const EdgeInsets.all(16.0),
         child: Container(
@@ -42,6 +45,7 @@ class _MapWidgetState extends State<MapWidget> {
           child: Stack(
             children: [
               FlutterMap(
+                mapController: _mapController,
                 options: MapOptions(
                   // Todo: Change the initial center to the location of your choice
                   initialCenter: const LatLng(-38.059252616021844, 144.3833972600851),
@@ -125,11 +129,65 @@ class _MapWidgetState extends State<MapWidget> {
                     size: 36.0
                   ),
                 ),
+              ),
+              Positioned(
+                bottom: 16.0,
+                left: 16.0,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    setState(() {
+                      _showTextInputDialog(context, locationSelectorProvider);
+                    });
+                  },
+                  backgroundColor: Colors.transparent,
+                  elevation: 0.0,
+                  child: Icon(
+                    showHeatMap? Icons.visibility_off_rounded : Icons.visibility_rounded, 
+                    color: Colors.black.withOpacity(0.8), 
+                    size: 36.0
+                  ),
+                ),
               )
             ],
           ),
         ),
       ),
+    );
+  }
+
+  void _showTextInputDialog(BuildContext context, LocationSelectorProvider locationSelectorProvider) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String inputText = '';
+        return AlertDialog(
+          title: const Text('Enter Location Name'),
+          content: TextField(
+            onChanged: (value) {
+              inputText = value;
+            },
+            decoration: const InputDecoration(hintText: "Location Name"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Create'),
+              onPressed: () {
+                // Handle the input text here
+                final center = _mapController.camera.center;
+                final zoom = _mapController.camera.zoom;
+                locationSelectorProvider.addLocation(center, inputText, zoom);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
