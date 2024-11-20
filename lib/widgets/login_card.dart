@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:schumacher/const/constant.dart';
@@ -115,6 +116,7 @@ class _LoginCardState extends State<LoginCard>{
                     if(password == confirmPassword)
                     {
                       await auth.createUserWithEmailAndPassword(email: email, password: password);
+                      _createUserInFirestore();
                       if (context.mounted) {
                         Navigator.pushNamed(context, '/main');
                       }
@@ -155,5 +157,23 @@ class _LoginCardState extends State<LoginCard>{
         ),
       ),
     );
+  }
+
+  void _createUserInFirestore() {
+    auth.authStateChanges().listen((user) {
+      if (user != null) {
+        // User is signed in
+        final userId = user.uid;
+        final db = FirebaseFirestore.instance;
+
+        // Create a document in the 'users' collection
+        db.collection('users').doc(userId).set({
+          'email': user.email,
+          // Add any other user data you want to store
+        });
+      } else {
+        // User is signed out
+      }
+    });
   }
 }

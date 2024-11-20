@@ -1,12 +1,58 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schumacher/data/location_selector_provider.dart';
 import 'package:schumacher/widgets/location_selector_widget.dart';
 import 'package:schumacher/widgets/mini_map_widget.dart';
 import 'package:schumacher/widgets/side_menu_widget.dart';
+import 'package:schumacher/widgets/uploader_widget.dart';
 
-class AnalyticsScreen extends StatelessWidget {
+class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
+
+  @override
+  State<AnalyticsScreen> createState() => _AnalyticsScreenState();
+}
+
+class _AnalyticsScreenState extends State<AnalyticsScreen> {
+
+  OverlayEntry? _overlayEntry;
+
+    OverlayEntry _createOverlayEntry() {
+      return OverlayEntry(
+        builder: (context) => Stack(
+          children: [
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+              child: Container(
+                color: Colors.black.withOpacity(0.5),
+              ),
+            ),
+            ModalBarrier(
+              color: Colors.black.withOpacity(0.5),
+              dismissible: false,
+            ),
+            Center(
+              child: Material(
+                elevation: 4.0,
+                child: UploaderWidget(
+                  onClose: () {
+                    _overlayEntry?.remove();
+                    _overlayEntry = null;
+                  },
+                ),
+              ),
+            ),
+          ]
+        ),
+      );
+    }
+    void _showOverlay() {
+      _overlayEntry = _createOverlayEntry();
+      Overlay.of(context).insert(_overlayEntry!);
+    }
+  final OverlayPortalController _overlayPortalController = OverlayPortalController();
   
   @override
   Widget build(BuildContext context) {
@@ -21,9 +67,41 @@ class AnalyticsScreen extends StatelessWidget {
                 child: SideMenuWidget(),
               ),
             ),
-            const Expanded(
+            Expanded(
               flex: 5,
-              child: Text('Analytics Screen'),
+              child: ElevatedButton(
+                onPressed: _overlayPortalController.toggle, 
+                child: OverlayPortal(
+                  controller: _overlayPortalController, 
+                  overlayChildBuilder: (BuildContext context) {
+                    return Stack(
+                      children: [
+                        BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                          child: Container(
+                            color: Colors.black.withOpacity(0.5),
+                          ),
+                        ),
+                        ModalBarrier(
+                          color: Colors.black.withOpacity(0.5),
+                          dismissible: false,
+                        ),
+                        Center(
+                          child: Material(
+                            elevation: 4.0,
+                            child: UploaderWidget(
+                              onClose: () {
+                                _overlayPortalController.toggle();
+                              },
+                            ),
+                          ),
+                        ),
+                      ]
+                    );
+                  },
+                  child: const Text('Upload Data'),
+                ),
+              ),
             ),
             Expanded(
               flex: 3,
