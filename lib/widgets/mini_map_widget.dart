@@ -30,7 +30,7 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final size = constraints.maxWidth;
-        final LatLngBounds bounds = calculateBounds(widget.latLngCenter, widget.zoom, size, size);
+        //final LatLngBounds bounds = calculateBounds(widget.latLngCenter, widget.zoom, size, size);
         return SizedBox(
           width: size,
           height: size,

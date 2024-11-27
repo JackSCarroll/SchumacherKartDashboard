@@ -11,12 +11,12 @@ class LocationSelectorWidget extends StatelessWidget {
     var settingsProvider = Provider.of<SettingsProvider>(context);
     return DropdownButtonHideUnderline(
       child: DropdownButton<String>(
-        value: locationSelectorProvider.selectedLocation.values.first.name,
-        items: locationSelectorProvider.locations.entries.map((entry) {
+        value: locationSelectorProvider.selectedLocation.name,
+        items: locationSelectorProvider.locations.map((entry) {
           return DropdownMenuItem<String>(
-            value: entry.value.name,
+            value: entry.name,
             child: Text(
-              entry.value.name,
+              entry.name,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
@@ -27,7 +27,7 @@ class LocationSelectorWidget extends StatelessWidget {
         }).toList(),
         onChanged: (String? newValue) {
           if (newValue != null) {
-            locationSelectorProvider.setSelectedLocation(locationSelectorProvider.locations.entries.where((entry) => entry.value.name == newValue).first.key);
+            locationSelectorProvider.setSelectedLocation(locationSelectorProvider.locations.where((entry) => entry.name == newValue).first);
           }
         },
         underline: Container(

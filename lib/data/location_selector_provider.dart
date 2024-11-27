@@ -3,22 +3,21 @@ import 'package:latlong2/latlong.dart';
 import 'package:schumacher/data/location_data.dart';
 
 class LocationSelectorProvider with ChangeNotifier {
-  final Map<LatLng, LocationData> _locations = {};
-  Map<LatLng, LocationData> _selectedLocation = {};
+  final List<LocationData> _locations = [];
+  late LocationData _selectedLocation;
 
-  Map<LatLng, LocationData> get locations => _locations;
-  Map<LatLng, LocationData> get selectedLocation => _selectedLocation;
+  List<LocationData> get locations => _locations;
+  LocationData get selectedLocation => _selectedLocation;
   bool get hasNoLocations => _locations.isEmpty;
 
-  void setSelectedLocation(LatLng point) {
-    _selectedLocation = {};
-    _selectedLocation[point] = _locations[point]!;
+  void setSelectedLocation(LocationData locationData) {
+    _selectedLocation = LocationData(name: locationData.name, zoom: locationData.zoom, latLng: locationData.latLng);
     notifyListeners();
   }
 
   void addLocation(LatLng point1, String name, double zoom) {
-    LocationData locationData = LocationData(name: name, zoom: zoom);
-    _locations.addEntries([MapEntry(point1, locationData)]);
-    setSelectedLocation(point1);
+    LocationData locationData = LocationData(name: name, zoom: zoom, latLng: point1);
+    _locations.add(locationData);
+    setSelectedLocation(locationData);
   }
 }
