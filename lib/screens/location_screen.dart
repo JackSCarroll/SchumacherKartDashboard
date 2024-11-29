@@ -1,6 +1,9 @@
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:schumacher/data/location_selector_provider.dart';
 import 'package:schumacher/widgets/location_editor_widget.dart';
 import 'package:schumacher/widgets/map_widget.dart';
 import 'package:schumacher/widgets/side_menu_widget.dart';
@@ -16,7 +19,7 @@ class LocationScreen extends StatefulWidget {
 class LocationScreenState extends State<LocationScreen> {
   final OverlayPortalController _overlayPortalController =
       OverlayPortalController();
-
+  final LocationSelectorProvider _locationSelectorProvider = LocationSelectorProvider();
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
@@ -36,10 +39,11 @@ class LocationScreenState extends State<LocationScreen> {
           Expanded(
             flex: 3,
             child: LocationEditorWidget(),
-          ),
-        ],
-      ),
-    ));
+            ),
+          ],
+        ),
+      )
+    );
   }
 }
 

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schumacher/data/location_selector_provider.dart';
@@ -17,6 +19,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   @override
   Widget build(BuildContext context) {
     final locationSelectorProvider = Provider.of<LocationSelectorProvider>(context);
+
     return Scaffold(
       body: SafeArea(
         child: Row(
@@ -35,9 +38,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               flex: 3,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: locationSelectorProvider.hasNoLocations
-                ? const Center(child: Text('No locations available'))
-                : Column(
+                child: Column(
                   children: [
                     const LocationSelectorWidget(),
                     MiniMapWidget(
