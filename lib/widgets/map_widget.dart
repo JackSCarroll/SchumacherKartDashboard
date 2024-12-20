@@ -6,7 +6,7 @@ import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_ti
 import 'package:provider/provider.dart';
 import 'package:schumacher/const/constant.dart';
 import 'package:schumacher/data/csv_processor.dart';
-import 'package:schumacher/data/location_selector_provider.dart';
+import 'package:schumacher/data/location_editor_provider.dart';
 import 'package:schumacher/data/map_points_provider.dart';
 import 'package:schumacher/data/settings_provider.dart';
 
@@ -30,7 +30,7 @@ class _MapWidgetState extends State<MapWidget> {
     var settingsProvider = Provider.of<SettingsProvider>(context);
     var csvProvider = Provider.of<CsvProcessor>(context);
     var pointsProvider = Provider.of<MapPointsProvider>(context);
-    var locationSelectorProvider = Provider.of<LocationSelectorProvider>(context);
+    var locationEditorProvider = Provider.of<LocationEditorProvider>(context);
     return Padding(
         padding: const EdgeInsets.all(16.0),
         child: Container(
@@ -125,7 +125,7 @@ class _MapWidgetState extends State<MapWidget> {
                   child: FloatingActionButton(
                     onPressed: () {
                       setState(() {
-                        _showTextInputDialog(context, locationSelectorProvider);
+                        _showTextInputDialog(context, locationEditorProvider);
                       });
                     },
                     backgroundColor: settingsProvider.selectedPrimaryColour,
@@ -184,7 +184,7 @@ class _MapWidgetState extends State<MapWidget> {
     );
   }
 
-  void _showTextInputDialog(BuildContext context, LocationSelectorProvider locationSelectorProvider) {
+  void _showTextInputDialog(BuildContext context, LocationEditorProvider locationEditorProvider) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -210,7 +210,7 @@ class _MapWidgetState extends State<MapWidget> {
                 // Handle the input text here
                 final center = _mapController.camera.center;
                 final zoom = _mapController.camera.zoom;
-                locationSelectorProvider.addLocation(center, inputText, zoom);
+                locationEditorProvider.setLocationData(inputText, center, zoom);
                 Navigator.of(context).pop();
               },
             ),

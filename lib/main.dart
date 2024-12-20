@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:schumacher/const/constant.dart';
 import 'package:schumacher/data/csv_processor.dart';
+import 'package:schumacher/data/location_editor_provider.dart';
 import 'package:schumacher/data/location_selector_provider.dart';
 import 'package:schumacher/data/map_points_provider.dart';
 import 'package:schumacher/data/settings_provider.dart';
@@ -30,6 +31,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => SettingsProvider(), child: const MyApp(),),
       ChangeNotifierProvider(create: (context) => MapPointsProvider(), child: const MyApp(),),
       ChangeNotifierProvider(create: (context) => LocationSelectorProvider(), child: const MyApp(),),
+      ChangeNotifierProvider(create: (context) => LocationEditorProvider(), child: const MyApp(),),
     ],
     child: const MyApp(),
   ));

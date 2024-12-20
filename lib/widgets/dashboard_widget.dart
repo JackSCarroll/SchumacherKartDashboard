@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:schumacher/data/settings_provider.dart';
 import 'package:schumacher/widgets/fun_details_card.dart';
-import 'package:schumacher/widgets/header_widget.dart';
 import 'package:schumacher/widgets/line_chart_card.dart';
+import 'package:schumacher/widgets/location_selector_widget.dart';
 
 class DashboardWidget extends StatelessWidget {
   const DashboardWidget({super.key});
@@ -15,7 +15,7 @@ class DashboardWidget extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: 50),
-        const HeaderWidget(),
+        const LocationSelectorWidget(),
         const SizedBox(height: 50),
         Text(
           'Fun Stats',

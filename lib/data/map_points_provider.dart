@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapPointsProvider with ChangeNotifier {
-  final List<List<LatLng>> _points = [];
+  List<List<LatLng>> _points = [];
 
   List<List<LatLng>> get points => _points;
 

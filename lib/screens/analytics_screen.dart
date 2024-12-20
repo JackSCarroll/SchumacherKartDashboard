@@ -41,6 +41,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 child: Column(
                   children: [
                     const LocationSelectorWidget(),
+                    const SizedBox(height: 16.0),
                     MiniMapWidget(
                       latLngCenter: locationSelectorProvider.selectedLocation.latLng,
                       zoom: locationSelectorProvider.selectedLocation.zoom,

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:schumacher/data/location_editor_provider.dart';
 import 'package:schumacher/data/location_selector_provider.dart';
 import 'package:schumacher/widgets/location_editor_widget.dart';
 import 'package:schumacher/widgets/map_widget.dart';
