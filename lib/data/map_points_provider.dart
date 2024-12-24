@@ -10,4 +10,9 @@ class MapPointsProvider with ChangeNotifier {
     _points.add([point1, point2]);
     notifyListeners();
   }
+
+  void clearPoints() {
+    _points.clear();
+    notifyListeners();
+  }
 }

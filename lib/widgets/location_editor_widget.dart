@@ -55,16 +55,19 @@ class _LocationEditorWidgetState extends State<LocationEditorWidget> {
           child: ListView.builder(
             itemCount: mapPointsProvider.points.length,
             itemBuilder: (_, index) {
+              String secName;
+              if(index == 0) { secName = 'Start/Finish';}else{secName = 'Sector $index';}
               return ListTile(
-                title: Text('Sector ${index + 1}'),
+                title: Text(secName),
                 subtitle: Text('Latitude: ${mapPointsProvider.points[index][0].latitude.toString()}, Longitude: ${mapPointsProvider.points[index][0].longitude.toString()}'),
               );
             },
           ),
         ),),
+        const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () {
-            _saveLocationToDB(uid, locationData);
+            _saveLocationToDB(uid, locationData, mapPointsProvider);
           },
           child: const Text('Add Location'),
         ),
@@ -72,7 +75,7 @@ class _LocationEditorWidgetState extends State<LocationEditorWidget> {
     );
   }
 
-  Future<void> _saveLocationToDB(String uid, LocationData locationData) async {
+  Future<void> _saveLocationToDB(String uid, LocationData locationData, MapPointsProvider mapPointsProvider) async {
     if (uid.isEmpty || locationData.name.isEmpty || locationData.latLng == null || locationData.zoom == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please complete all fields')),
@@ -92,9 +95,20 @@ class _LocationEditorWidgetState extends State<LocationEditorWidget> {
         'longitude': locationData.latLng.longitude,
         'zoom': locationData.zoom,
       });
+    final points = mapPointsProvider.points;
+      for (var i = 0; i < points.length; i++) {
+        var pointRefNew = pointRef.collection('sectors').doc('sector_$i');
+        batch.set(pointRefNew, {
+          'id': i,
+          'latitude_1': points[i][0].latitude,
+          'longitude_1': points[i][0].longitude,
+          'latitude_2': points[i][1].latitude,
+          'longitude_2': points[i][1].longitude,
+        });
+      }
 
     await batch.commit();
-
+    mapPointsProvider.clearPoints();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Data uploaded successfully')),
     );

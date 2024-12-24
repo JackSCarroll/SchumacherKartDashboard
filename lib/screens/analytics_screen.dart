@@ -45,6 +45,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     MiniMapWidget(
                       latLngCenter: locationSelectorProvider.selectedLocation.latLng,
                       zoom: locationSelectorProvider.selectedLocation.zoom,
+                      sectors: locationSelectorProvider.selectedLocation.sectors,
                     ),
                   ],
                 ),

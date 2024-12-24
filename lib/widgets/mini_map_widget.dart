@@ -11,7 +11,8 @@ import 'package:schumacher/data/settings_provider.dart';
 class MiniMapWidget extends StatefulWidget{
   final LatLng latLngCenter;
   final double zoom;
-  const MiniMapWidget({super.key, required this.latLngCenter, required this.zoom});
+  final List<List<LatLng>> sectors;
+  const MiniMapWidget({super.key, required this.latLngCenter, required this.zoom, this.sectors = const []});
 
   @override
   State<MiniMapWidget> createState() => _MiniMapWidgetState();
@@ -61,7 +62,7 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
                         tileProvider: CancellableNetworkTileProvider(),
                       ),
                       PolylineLayer(
-                        polylines: pointsProvider.points.map((pair) {
+                        polylines: widget.sectors.map((pair) {
                           return Polyline(
                             points: pair,
                             strokeWidth: 4.0,
