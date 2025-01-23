@@ -72,8 +72,19 @@ class MyApp extends StatelessWidget {
                   return Center(child: Text('Error: ${authSnapshot.error}'));
                 } else {
                   if (authSnapshot.hasData) {
-                    return const MainScreen();
-                  } else {
+                      return FutureBuilder(
+                        future: Provider.of<SettingsProvider>(context, listen: false).loadColour(),
+                        builder: (context, colourSnapshot) {
+                          if (colourSnapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(child: CircularProgressIndicator());
+                          } else if (colourSnapshot.hasError) {
+                            return Center(child: Text('Error: ${colourSnapshot.error}'));
+                          } else {
+                            return const MainScreen();
+                          }
+                        }
+                      );
+                    } else {
                     return const LoginScreen();
                   }
                 }

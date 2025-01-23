@@ -5,6 +5,8 @@ import 'package:csv/csv.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:schumacher/data/location_selector_provider.dart';
 import 'package:schumacher/widgets/custom_card_widget.dart';
 
 class UploaderWidget extends StatefulWidget {
@@ -19,6 +21,7 @@ class _UploaderWidget extends State<UploaderWidget> {
   String fileName = '';
   DateTime? _selectedDateTime;
   List<List<dynamic>> _csvData = [];
+  
 
   Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -46,16 +49,22 @@ class _UploaderWidget extends State<UploaderWidget> {
     });
   }
 
-  Future<void> _uploadData(String uid) async {
+  Future<void> _uploadData(LocationSelectorProvider locationSelectorProvider) async {
     if (_csvData.isEmpty || _selectedDateTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please complete all fields')),
       );
       return;
     }
+    
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    DocumentReference userDocumentReference = firestore.collection('user_set_locations')
+                                                      .doc(auth.currentUser?.uid)
+                                                      .collection('locations')
+                                                      .doc(locationSelectorProvider.selectedLocation.uid);
 
-    final firestore = FirebaseFirestore.instance;
-    final docRef = firestore.collection('gps_data').doc('$uid : ${_selectedDateTime!.toIso8601String()}');
+    final docRef = userDocumentReference.collection('gps_data').doc(_selectedDateTime!.toIso8601String());
     final batch = firestore.batch();
 
     for (int index = 1; index < _csvData.length; index++) { // Skip header row
@@ -77,26 +86,11 @@ class _UploaderWidget extends State<UploaderWidget> {
     );
   }
 
-  Future<void> _showDatePicker() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null && picked != _selectedDateTime) {
-      setState(() {
-        _selectedDateTime = picked;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final User? user = FirebaseAuth.instance.currentUser;
-    final String uid = user?.uid ?? '';
+    var locationSelectorProvider = Provider.of<LocationSelectorProvider>(context);
     return SizedBox(
-      height: 300,
+      height: 400,
       width: 600,
       child: CustomCard(
         child: Padding(
@@ -124,12 +118,34 @@ class _UploaderWidget extends State<UploaderWidget> {
                     });
                   }
                 },
-                child: const Text('Pick Date/Time'),
+                child: const Text('Pick Date'),
               ),
-              if (_selectedDateTime != null) Text('Selected: $_selectedDateTime'),
               const SizedBox(height: 10.0),
               ElevatedButton(
-                onPressed: () => _uploadData(uid),
+                onPressed: () async {
+                  final TimeOfDay? timeOfDay = await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay.now(),
+                  );
+                  if(timeOfDay != null && _selectedDateTime != null) {
+                    setState(() {
+                      _selectedDateTime = DateTime(
+                        _selectedDateTime!.year,
+                        _selectedDateTime!.month,
+                        _selectedDateTime!.day,
+                        timeOfDay.hour,
+                        timeOfDay.minute,
+                      );
+                    });
+                  }
+                },
+                child: const Text('Pick Time'),
+              ),
+              const SizedBox(height: 10.0),
+              if (_selectedDateTime != null) Text('Selected: ${_selectedDateTime!.day}/${_selectedDateTime!.month}/${_selectedDateTime!.year} at ${_selectedDateTime!.hour}:${_selectedDateTime!.minute}'),
+              const SizedBox(height: 10.0),
+              ElevatedButton(
+                onPressed: () => _uploadData(locationSelectorProvider),
                 child: const Text('Upload Data'),
               ),
               const SizedBox(height: 30.0),

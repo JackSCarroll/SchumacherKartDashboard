@@ -5,7 +5,6 @@ import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_ti
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:schumacher/data/csv_processor.dart';
-import 'package:schumacher/data/map_points_provider.dart';
 import 'package:schumacher/data/settings_provider.dart';
 
 class MiniMapWidget extends StatefulWidget{
@@ -21,12 +20,10 @@ class MiniMapWidget extends StatefulWidget{
 class _MiniMapWidgetState extends State<MiniMapWidget> {
 
   bool showHeatMap = false;
-
   @override
   Widget build(BuildContext context) {
     var settingsProvider = Provider.of<SettingsProvider>(context);
     var csvProvider = Provider.of<CsvProcessor>(context);
-    var pointsProvider = Provider.of<MapPointsProvider>(context);
     
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -56,11 +53,13 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
                       minZoom: 18,
                     ),
                     children: [
+                      // Draw map tiles
                       TileLayer(
                         urlTemplate: 'https://api.maptiler.com/tiles/satellite-v2/{z}/{x}/{y}.jpg?key=${dotenv.env['MAPTILER_API_KEY']}',
                         userAgentPackageName: 'dev.jackscarroll.schumacher_dashboard',
                         tileProvider: CancellableNetworkTileProvider(),
                       ),
+                      // Draw sectors
                       PolylineLayer(
                         polylines: widget.sectors.map((pair) {
                           return Polyline(
@@ -71,6 +70,7 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
                         }).toList(),
                       ),
                       if(showHeatMap)
+                        // Draw heat map
                         PolylineLayer(
                         polylines: csvProvider.latLngPoints.asMap().entries.map((entry) {
                           if(entry.key == 0) {
@@ -115,27 +115,6 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
         );
       },
     );
-  }
-  
-  LatLngBounds calculateBounds(LatLng center, double zoom, double mapWidth, double mapHeight) {
-    // Constants for Earth's radius and conversion factors
-    const double earthRadius = 6378137.0;
-    const double initialResolution = 2 * 3.141592653589793 * earthRadius / 256.0;
-
-    // Calculate resolution based on zoom level
-    double resolution = initialResolution / (1 << zoom.toInt());
-
-    // Calculate lat/lng deltas based on map size and resolution
-    double latDelta = (mapHeight * resolution) / earthRadius;
-    double lngDelta = ((mapWidth * resolution) / (earthRadius * 3.141592653589793 / 180.0)) + 0.000001;
-
-    // Calculate bounds
-    LatLngBounds bounds = LatLngBounds(
-      LatLng(center.latitude - latDelta, center.longitude - lngDelta),
-      LatLng(center.latitude + latDelta, center.longitude + lngDelta),
-    );
-
-    return bounds;
   }
 
   Color getColorForSpeed(double speed) {

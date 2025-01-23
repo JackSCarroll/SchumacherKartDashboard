@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:schumacher/data/fun_details.dart';
 import 'package:schumacher/data/settings_provider.dart';
+import 'package:schumacher/util/Responsive.dart';
 import 'package:schumacher/widgets/custom_card_widget.dart';
 
 class FunDetailsCard extends StatelessWidget {
@@ -17,9 +18,9 @@ class FunDetailsCard extends StatelessWidget {
       itemCount: funDetails.funData.length,
       shrinkWrap: true,
       physics: const ScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        crossAxisSpacing: 15,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: Responsive.isMobile(context) ? 2 : 4,
+        crossAxisSpacing: Responsive.isMobile(context) ? 12 : 15,
         mainAxisSpacing: 12.0,
       ),
       itemBuilder: (context, index) => CustomCard(
@@ -37,7 +38,7 @@ class FunDetailsCard extends StatelessWidget {
               child: Text(
                 funDetails.funData[index].value,
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: !Responsive.isDesktop(context) ? 18 : 14,
                   fontWeight: FontWeight.w600,
                   color: settingsProvider.selectedPrimaryColour,
                 ),
@@ -46,7 +47,7 @@ class FunDetailsCard extends StatelessWidget {
             Text(
               funDetails.funData[index].title,
               style: GoogleFonts.orbitron(
-                fontSize: 13,
+                fontSize: !Responsive.isDesktop(context) ? 13 : 11,
                 color: Colors.grey,
                 fontWeight: FontWeight.normal,
               ),

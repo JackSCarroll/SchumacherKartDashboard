@@ -210,7 +210,8 @@ class _MapWidgetState extends State<MapWidget> {
                 // Handle the input text here
                 final center = _mapController.camera.center;
                 final zoom = _mapController.camera.zoom;
-                locationEditorProvider.setLocationData(inputText, center, zoom);
+                // TODO: This might break
+                locationEditorProvider.setLocationData('', inputText, center, zoom);
                 Navigator.of(context).pop();
               },
             ),

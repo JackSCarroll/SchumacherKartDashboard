@@ -169,6 +169,7 @@ class _LoginCardState extends State<LoginCard>{
         // Create a document in the 'users' collection
         db.collection('users').doc(userId).set({
           'email': user.email,
+          'preferredColour' : 'Blue',
           // Add any other user data you want to store
         });
       } else {
