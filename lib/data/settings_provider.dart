@@ -12,11 +12,9 @@ class SettingsProvider with ChangeNotifier {
     DocumentReference userDocumentReference = _firestore.collection('users').doc(_auth.currentUser?.uid);
     DocumentSnapshot<Object?> querySnapshot = await userDocumentReference.get();
     Map<String, dynamic> data = querySnapshot.data() as Map<String, dynamic>;
-    if(data != null) {
-      int preferredColour = data['preferredColour'];
-      setSelectedColour(preferredColour);
+    int preferredColour = data['preferredColour'];
+    setSelectedColour(preferredColour);
     }
-  }
 
   Future<void> setColour(int index) async {
     DocumentReference userDocumentReference = _firestore.collection('users').doc(_auth.currentUser?.uid);

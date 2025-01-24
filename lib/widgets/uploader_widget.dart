@@ -66,7 +66,9 @@ class _UploaderWidget extends State<UploaderWidget> {
 
     final docRef = userDocumentReference.collection('gps_data').doc(_selectedDateTime!.toIso8601String());
     final batch = firestore.batch();
-
+    docRef.set({
+      'id': _selectedDateTime!.toIso8601String(),
+    });
     for (int index = 1; index < _csvData.length; index++) { // Skip header row
       final row = _csvData[index];
       final pointRef = docRef.collection('points').doc('point $index');
